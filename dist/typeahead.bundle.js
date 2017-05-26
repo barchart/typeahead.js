@@ -1,7 +1,7 @@
 /*!
  * typeahead.js 0.11.1
  * https://github.com/twitter/typeahead.js
- * Copyright 2013-2015 Twitter, Inc. and other contributors; Licensed MIT
+ * Copyright 2013-2017 Twitter, Inc. and other contributors; Licensed MIT
  */
 
 (function(root, factory) {
@@ -9,10 +9,10 @@
         define("bloodhound", [ "jquery" ], function(a0) {
             return root["Bloodhound"] = factory(a0);
         });
-    } else if (typeof exports === "object") {
+    } else if (typeof module === "object" && module.exports) {
         module.exports = factory(require("jquery"));
     } else {
-        root["Bloodhound"] = factory(jQuery);
+        root["Bloodhound"] = factory(root["jQuery"]);
     }
 })(this, function($) {
     var _ = function() {
@@ -922,10 +922,10 @@
         define("typeahead.js", [ "jquery" ], function(a0) {
             return factory(a0);
         });
-    } else if (typeof exports === "object") {
+    } else if (typeof module === "object" && module.exports) {
         module.exports = factory(require("jquery"));
     } else {
-        factory(jQuery);
+        factory(root["jQuery"]);
     }
 })(this, function($) {
     var _ = function() {
@@ -1080,11 +1080,11 @@
             highlight: "tt-highlight"
         };
         return build;
-        function build(o) {
+        function build(o, align) {
             var www, classes;
             classes = _.mixin({}, defaultClassNames, o);
             www = {
-                css: buildCss(),
+                css: buildCss(align),
                 classes: classes,
                 html: buildHtml(classes),
                 selectors: buildSelectors(classes)
@@ -1112,7 +1112,7 @@
             });
             return selectors;
         }
-        function buildCss() {
+        function buildCss(align) {
             var css = {
                 wrapper: {
                     position: "relative",
@@ -1151,6 +1151,12 @@
                     right: " 0"
                 }
             };
+            if (align) {
+                if (align === "right") {
+                    delete css.menu.left;
+                    css.menu.right = "0";
+                }
+            }
             if (_.isMsie()) {
                 _.mixin(css.input, {
                     backgroundImage: "url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)"
@@ -2232,7 +2238,7 @@
                 var www;
                 datasets = _.isArray(datasets) ? datasets : [].slice.call(arguments, 1);
                 o = o || {};
-                www = WWW(o.classNames);
+                www = WWW(o.classNames, o.align);
                 return this.each(attach);
                 function attach() {
                     var $input, $wrapper, $hint, $menu, defaultHint, defaultMenu, eventBus, input, menu, typeahead, MenuConstructor;

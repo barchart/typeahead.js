@@ -4,7 +4,7 @@
  * Copyright 2013-2014 Twitter, Inc. and other contributors; Licensed MIT
  */
 
-var WWW = (function() {
+var WWW = (function () {
   'use strict';
 
   var defaultClassNames = {
@@ -23,13 +23,13 @@ var WWW = (function() {
 
   return build;
 
-  function build(o) {
+  function build(o, align) {
     var www, classes;
 
     classes = _.mixin({}, defaultClassNames, o);
 
     www = {
-      css: buildCss(),
+      css: buildCss(align),
       classes: classes,
       html: buildHtml(classes),
       selectors: buildSelectors(classes)
@@ -40,7 +40,9 @@ var WWW = (function() {
       html: www.html,
       classes: www.classes,
       selectors: www.selectors,
-      mixin: function(o) { _.mixin(o, www); }
+      mixin: function (o) {
+        _.mixin(o, www);
+      }
     };
   }
 
@@ -53,13 +55,15 @@ var WWW = (function() {
 
   function buildSelectors(classes) {
     var selectors = {};
-    _.each(classes, function(v, k) { selectors[k] = '.' + v; });
+    _.each(classes, function (v, k) {
+      selectors[k] = '.' + v;
+    });
 
     return selectors;
   }
 
-  function buildCss() {
-    var css =  {
+  function buildCss(align) {
+    var css = {
       wrapper: {
         position: 'relative',
         display: 'inline-block'
@@ -95,14 +99,21 @@ var WWW = (function() {
       },
       rtl: {
         left: 'auto',
-        right:' 0'
+        right: ' 0'
       }
     };
 
+    if (align) {
+      if (align === 'right') {
+        delete css.menu.left;
+        css.menu.right = '0';
+      }
+    }
+
     // ie specific styling
     if (_.isMsie()) {
-       // ie6-8 (and 9?) doesn't fire hover and click events for elements with
-       // transparent backgrounds, for a workaround, use 1x1 transparent gif
+      // ie6-8 (and 9?) doesn't fire hover and click events for elements with
+      // transparent backgrounds, for a workaround, use 1x1 transparent gif
       _.mixin(css.input, {
         backgroundImage: 'url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7)'
       });
